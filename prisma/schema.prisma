@@ -31,7 +31,7 @@ model Product {
   smallDescription  String
   description       Json
   images            String[]
-  productfile       String
+  productFile       String
   category          CategoryTypes
   createdAt         DateTime @default(now())
   User              User? @relation(fields: [userId], references: [id])

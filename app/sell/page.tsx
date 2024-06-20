@@ -8,19 +8,26 @@ import { Textarea } from "@/components/ui/textarea";
 import { TipTapEditor } from "../components/Editor";
 import { UploadDropzone } from "../lib/uploadthing";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { JSONContent } from "@tiptap/react";
 import { SellProduct, State } from "../actions";
 import { useFormState } from "react-dom";
+import {toast} from "sonner";
 
 export default function SellRoute(){
     const initalState: State = {message: "", status: undefined};
     const [state, formAction] = useFormState(SellProduct, initalState);
     const [json, setJson] = useState<null | JSONContent>(null);
     const [images, setImages] = useState<null | string[]>(null);
-    const [productFile, SetProductFile] = useState<null | string>(null);
 
-    console.log(state?.message)
+    useEffect(() => {
+        if(state?.status === "success"){
+            toast.success(state.message);
+        } else if(state?.status === "error"){
+            toast.error(state.message);
+        }
+    }, [state])
+
     return(
         <section className="max-w-7xl mx-autp px-4 md:px-8 mb-14">
             <Card>
@@ -80,20 +87,11 @@ export default function SellRoute(){
                             onUploadError={(error: Error) => {
                                 throw new Error(`${error}`)
                             }}/>
+                            {state?.errors?.["images"]?.[0] && (
+                                <p className="text-destructive">{state?.errors?.["images"]?.[0]}</p>
+                            )}
                         </div>
 
-                        <div className="flex flex-col gap-y-2">
-                            <input type="hidden" name="productFile" value={productFile ?? " "} />
-                            <Label>Archivo del producto</Label>
-                            <UploadDropzone 
-                            onClientUploadComplete={(res) => {
-                                SetProductFile(res[0].url);
-                            }}
-                            endpoint="productFileUpload"
-                            onUploadError={(error: Error) => {
-                                throw new Error(`${error}`)
-                            }}/>
-                        </div>
                     </CardContent>
                     <CardFooter>
                         <Button>

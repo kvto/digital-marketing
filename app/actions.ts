@@ -19,11 +19,7 @@ const productSchema = z.object({
     price: z.number().min(1, {message: "El precio debe ser mayor a 1"}),
     smallDescription: z.string().min(10, {message: "Por favor, describa su producto"}),
     description: z.string().min(10, {message: "Descripcion es requerida"}),
-    images: z.array(z.string(), {message: "Imagenes son requerida"}),
-    productFile: z
-    .string()
-    .min(1, {message: "Por favor, subir el archivo zip "})
-})
+    images: z.array(z.string(), {message: "Imagenes son requerida"}),})
 
 export async function SellProduct(prevState: any, formData: FormData){
     const {getUser} = getKindeServerSession(); 
@@ -36,11 +32,10 @@ export async function SellProduct(prevState: any, formData: FormData){
     const validateFields = productSchema.safeParse({
         name: formData.get("name"),
         category: formData.get("category"),
-        price: formData.get("price"),
+        price: Number(formData.get("price")),
         smallDescription: formData.get("smallDescription"),
         description: formData.get("description"),
-        images: formData.get("images"),
-        productFile: formData.get("productFile")
+        images: JSON.parse(formData.get("images") as string),
     });
 
     if(!validateFields.success){
@@ -51,5 +46,10 @@ export async function SellProduct(prevState: any, formData: FormData){
         };
 
         return state;
+    }
+
+    const state: State = {
+        status: "success",
+        message: "Tu producto ha sido creado"
     }
 }
